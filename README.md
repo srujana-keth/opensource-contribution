@@ -1,15 +1,15 @@
-# Contribution [#]: [Issue Title]
+# Contribution 1: Feature Request: Persistent "Baseline" Memories
 
-**Contribution Number:** [1 / 2 / 3]  
-**Student:** [Your Name]  
-**Issue:** [GitHub issue link]  
-**Status:** [Phase I / Phase II / Phase III / Phase IV] [In Progress / Complete]
+**Contribution Number:** 1  
+**Student:** Srujana Kethamukkala  
+**Issue:** [GitHub issue link](https://github.com/BasedHardware/omi/issues/4631) 
+**Status:** Phase I Complete
 
 ---
 
 ## Why I Chose This Issue
 
-[1-2 paragraphs explaining why this issue interests you, how it matches your skills/learning goals, what you hope to learn]
+I chose this issue because as an AI engineer and my experience with LLM infrastructure, I have spent a lot of time working with context windows and retrieval setups, so the problem of the AI forgetting foundational user facts makes total sense to me. In production systems, standard vector database searches often drop foundational user data during top-k similarity pruning, so building a dedicated "baseline" memory anchor is a highly practical problem that directly matches my backend and FastAPI skillset.
 
 ---
 
