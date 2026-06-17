@@ -1,9 +1,9 @@
-# Contribution 1: Feature Request: Persistent "Baseline" Memories
+# Contribution 2: Feature Request: Persistent "Baseline" Memories
 
-**Contribution Number:** 1  
+**Contribution Number:** 2  
 **Student:** Srujana Kethamukkala  
-**Issue:** [GitHub issue link](https://github.com/BasedHardware/omi/issues/4631) 
-**Status:** Phase I Complete
+**Issue:** [GitHub issue link](https://github.com/BasedHardware/omi/issues/4631)
+**Status:** Phase II Complete
 
 ---
 
@@ -17,15 +17,15 @@ I chose this issue because as an AI engineer and my experience with LLM infrastr
 
 ### Problem Description
 
-[In your own words, what's broken or missing?]
+Omi AI does not automatically use saved user memories when generating responses in new chat sessions. Users must explicitly prompt the AI to reference their memories (e.g., "use my saved memories to answer") for it to factor them in. This defeats the purpose of saving memories - users have to remember to ask about things they already told the app.
 
 ### Expected Behavior
 
-[What should happen?]
+When a user starts a new chat session, Omi should automatically inject certain flagged ("baseline") memories into the context window so the AI can personalize its responses without requiring explicit prompting every time.
 
 ### Current Behavior
 
-[What actually happens?]
+If a user asks a generic question like "What tech stack should I use for my project?", the AI gives a generic response even if a relevant memory exists (e.g., "I want to build agents using Langchain for my project"). The memory is only used if the user explicitly says "use my saved memories to answer."
 
 ### Affected Components
 
@@ -37,19 +37,27 @@ I chose this issue because as an AI engineer and my experience with LLM infrastr
 
 ### Environment Setup
 
-[Notes on setting up your local development environment - challenges you faced, how you solved them]
+  - Cloned fork
+  - Required: Apple Developer signing certificate in Keychain, Node.js, Xcode command line tools
+  - Added DEEPGRAM_API_KEY to desktop/Backend-Rust/.env.example for on-device transcription (uses Parakeet v3 model - needs ~20s to initialize on first run)
+  - Used  cp desktop/.env.example desktop/Backend-Rust/.env ./run.sh --yolo (quick start mode) to run the macOS desktop app against the production backend - no local Rust backend or credentials required
+  - Known issue in --yolo mode: prod Rust backend returns HTTP 500: no such table: memories/transcription_sessions for AgentSync — chat responses fail through the desktop agent bridge. Full chat testing requires the mobile app.
 
 ### Steps to Reproduce
 
-1. [Step 1]
-2. [Step 2]
-3. [Observed result]
+  1. Install the Omi app (iOS or Android) and sign in with a Google account
+  2. Go to Memories → tap + → manually add: "I want to create agents using Langchain for my AI project"
+  3. Go to the Chat tab and start a new session
+  4. Send: "What tech stack should I use for my project?"
+  5. Observe: response is generic — no mention of Langchain
+  6. Send: "Using my saved memories, what tech stack should I use for my project?"
+  7. Observe: response now correctly references Langchain
+  8. Result: Memory exists and is accessible but is NOT auto-injected into context — only retrieved on explicit request.
 
 ### Reproduction Evidence
 
-- **Commit showing reproduction:** [Link to commit in your fork]
-- **Screenshots/logs:** [If applicable]
-- **My findings:** [What you discovered during reproduction]
+  - Branch: https://github.com/srujana-keth/omi/tree/feat/baseline-memories
+  - My findings: Traced the memory injection pipeline in backend/utils/llms/memory.py. The function get_prompt_memories() fetches all memories and injects them into every chat prompt via {memories_str}. However, there is no prioritization mechanism — all memories are treated equally and there is no way to flag certain memories as "always inject." The Memory model has relevant fields (manually_added, visibility, is_locked) but no is_baseline flag. The desktop chat also fails in --yolo mode due to backend DB schema issues (no such table: transcription_sessions, no such table: memories) — unrelated but worth noting for #4631 testing.
 
 ---
 
@@ -57,30 +65,43 @@ I chose this issue because as an AI engineer and my experience with LLM infrastr
 
 ### Analysis
 
-[Your analysis of the root cause - what's causing the issue?]
+The root cause is the absence of a "baseline" memory tier in the data model and injection logic. get_prompt_data() in backend/utils/llms/memory.py fetches all memories and passes them in bulk — there is no mechanism to guarantee that high-priority memories survive context truncation or are always prepended to the prompt. The MemoryDB model in backend/models/memories.py has extensible fields (is_locked, manually_added, visibility) that show this pattern is already in use for other memory properties — adding is_baseline follows the same pattern.
 
 ### Proposed Solution
 
-[High-level description of your fix approach]
+Add a boolean is_baseline flag to the Memory model. Baseline memories are always injected first in the system prompt, regardless of total memory count or context limits. Users can mark any memory as baseline via a long-press action in the mobile app. The backend exposes a PATCH endpoint to toggle this flag.
 
 ### Implementation Plan
 
 Using UMPIRE framework (adapted):
 
-**Understand:** [Restate the problem]
+**Understand:** Omi stores user memories but treats all of them equally during context injection. There is no way to pin certain memories so the AI always has access to them — users must re-prompt every session.
 
-**Match:** [What similar patterns/solutions exist in the codebase?]
+**Match:** The MemoryDB model already uses boolean flags (is_locked, manually_added) to control memory behavior. The get_prompt_data() function already separates memories into two buckets (user_made vs generated) — adding a third "baseline" bucket follows the same pattern.
 
-**Plan:** [Step-by-step implementation plan]
-1. [Modify file X to do Y]
-2. [Add function Z]
-3. [Update tests]
+**Plan:** 
+  1. Add is_baseline: bool = False to MemoryDB in backend/models/memories.py
+  2. Add a PATCH /v3/memories/{memory_id}/baseline endpoint in backend/routers/memories.py to toggle the flag
+  3. Modify get_prompt_data() in backend/utils/llms/memory.py to fetch baseline memories separately and prepend them to the prompt string before all others
+  4. Update Memory.get_memories_as_str() to label baseline memories clearly in the prompt (e.g., [Always in context])
+  5. Add a long-press "Pin as Baseline" action in the Flutter memory list UI (app/lib/)
+  6. Write unit tests for the new get_prompt_data() logic in backend/tests/unit/
 
-**Implement:** [Link to your branch/commits as you work]
+**Implement:** [https://github.com/srujana-keth/omi/tree/feat/baseline-memories]
 
-**Review:** [Self-review checklist - does it follow the project's contribution guidelines?]
+**Review:** 
+  - Follows black --line-length 120 --skip-string-normalization formatting
+  - All imports at module top level (no in-function imports)
+  - New endpoint uses uid: str = Depends(get_current_user_uid) for auth
+  - No sync requests.* calls in async code
+  - Pre-commit hook installed and passing
 
-**Evaluate:** [How will you verify it works?]
+**Evaluate:** 
+  - Mark the Langchain memory as baseline
+  - Start a new chat session and ask a generic question with no memory hint
+  - Verify the response references Langchain without explicit prompting
+  - Run bash backend/test.sh to confirm existing tests pass
+  - Add a unit test: get_prompt_data() always includes baseline memories at the top of the returned string
 
 ---
 
