@@ -1,9 +1,9 @@
-# Contribution 2: Feature Request: Persistent "Baseline" Memories
+# Contribution 3: Feature Request: Persistent "Baseline" Memories
 
-**Contribution Number:** 2  
+**Contribution Number:** 3  
 **Student:** Srujana Kethamukkala  
 **Issue:** [GitHub issue link](https://github.com/BasedHardware/omi/issues/4631)
-**Status:** Phase II Complete
+**Status:** Phase III in-progress
 
 ---
 
@@ -109,9 +109,7 @@ Using UMPIRE framework (adapted):
 
 ### Unit Tests
 
-- [ ] Test case 1: [Description]
-- [ ] Test case 2: [Description]
-- [ ] Test case 3: [Description]
+- [ ] Test case 1: Verified model field, endpoint existence, rate-limiting, and injection logic using `test_baseline_memories.py`.
 
 ### Integration Tests
 
@@ -120,15 +118,18 @@ Using UMPIRE framework (adapted):
 
 ### Manual Testing
 
-[What you tested manually and results]
+Verified backend logic using `test_baseline_memories.py` which mocks database dependencies.
 
 ---
 
 ## Implementation Notes
 
-### Week [X] Progress
-
-[What you built this week, challenges faced, decisions made]
+### Week 3 Progress
+  - Implemented the `is_baseline` field in `MemoryDB`.
+  - Implemented `PATCH /v3/memories/{memory_id}/baseline` endpoint.
+  - Updated `utils/llms/memory.py` to prioritize baseline memories in context injection.
+  - Verified all backend logic using `pytest tests/unit/test_baseline_memories.py`.
+  - *Note: Client-side UI integration (Flutter) is pending.*
 
 ### Week [Y] Progress
 
@@ -136,9 +137,13 @@ Using UMPIRE framework (adapted):
 
 ### Code Changes
 
-- **Files modified:** [List]
-- **Key commits:** [Links to important commits]
-- **Approach decisions:** [Why you chose certain approaches]
+- **Files modified:** 
+  - `omi/backend/models/memories.py`
+  - `omi/backend/routers/memories.py`
+  - `omi/backend/utils/llms/memory.py`
+  - `omi/backend/tests/unit/test_baseline_memories.py`
+- **Key commits:** [https://github.com/srujana-keth/omi/commit/7a5f6ac21375bb9c0a79a274432ec2c1a2f21da3]
+- **Approach decisions:** Added `is_baseline` as an additive field to `MemoryDB` to ensure backward compatibility with existing Firestore documents.
 
 ---
 
