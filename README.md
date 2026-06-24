@@ -3,7 +3,7 @@
 **Contribution Number:** 3  
 **Student:** Srujana Kethamukkala  
 **Issue:** [GitHub issue link](https://github.com/BasedHardware/omi/issues/4631)
-**Status:** Phase III in-progress
+**Status:** Phase III completed
 
 ---
 
