@@ -3,7 +3,7 @@
 **Contribution Number:** 3  
 **Student:** Srujana Kethamukkala  
 **Issue:** [GitHub issue link](https://github.com/BasedHardware/omi/issues/4631)
-**Status:** Phase III completed
+**Status:** Phase IV in progress
 
 ---
 
@@ -29,7 +29,10 @@ If a user asks a generic question like "What tech stack should I use for my proj
 
 ### Affected Components
 
-[Which parts of the codebase are involved?]
+- **Backend Models**: `backend/models/memories.py` (defines `Memory` / `MemoryDB` fields)
+- **Backend Routers**: `backend/routers/memories.py` (exposes API endpoints)
+- **Backend LLM Utils**: `backend/utils/llms/memory.py` (injects memories into system prompts)
+- **Backend Tests**: `backend/tests/unit/test_baseline_memories.py` (unit tests for baseline memories)
 
 ---
 
@@ -147,17 +150,24 @@ Verified backend logic using `test_baseline_memories.py` which mocks database de
 
 ---
 
-## Pull Request
+## Pull Request & Contribution Status
 
-**PR Link:** [GitHub PR URL when submitted]
+**PR Link:** Pending (Security report to be submitted prior to raising the Pull Request. Draft PR: [Compare feature/persistent-baseline-memories](https://github.com/BasedHardware/omi/pull/8728))
 
-**PR Description:** [Draft or final PR description - much of the content above can be adapted]
+**Brief Summary of Contribution:**
+- Added a `is_baseline` boolean flag to the `Memory` and `MemoryDB` models in the FastAPI backend.
+- Implemented `PATCH /v3/memories/{memory_id}/baseline` endpoint in the backend to allow toggling baseline memory status.
+- Updated `get_prompt_data` in `backend/utils/llms/memory.py` to retrieve baseline memories and prepend them to the system prompt, preventing them from being dropped during context truncation.
+- Added comprehensive unit testing to verify the backend behavior and prioritize baseline memory injection.
 
-**Maintainer Feedback:**
-- [Date]: [Summary of feedback received]
-- [Date]: [How you addressed it]
+**Notes on Feedback Received or Next Steps:**
+- **Next Steps:** Submit a security report for the project. There are security concerns/advisories to report before raising the formal PR.
+- **Security Reference Links:**
+  - [BasedHardware/omi Security Policy](https://github.com/BasedHardware/omi/security/policy)
+  - [Submit a Security Advisory](https://github.com/BasedHardware/omi/security/advisories/new)
+- Once the security reporting is handled, open a formal Pull Request on the upstream repository.
 
-**Status:** [Awaiting review / Iterating / Approved / Merged]
+**Status:** Phase IV in progress (Pre-PR Security Reporting)
 
 ---
 
