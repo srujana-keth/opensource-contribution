@@ -1,6 +1,6 @@
-# Contribution 3: Feature Request: Persistent "Baseline" Memories
+# Contribution 4: Feature Request: Persistent "Baseline" Memories
 
-**Contribution Number:** 3  
+**Contribution Number:** 4  
 **Student:** Srujana Kethamukkala  
 **Issue:** [GitHub issue link](https://github.com/BasedHardware/omi/issues/4631)
 **Status:** Phase IV in progress
