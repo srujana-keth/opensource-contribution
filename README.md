@@ -1,11 +1,11 @@
-# Contribution 5: Feature Request: Persistent "Baseline" Memories
+# Contribution 6: Feature Request: Persistent "Baseline" Memories
 
-**Contribution Number:** 5
+**Contribution Number:** 6
 **Student:** Srujana Kethamukkala
 **Issue:** [GitHub issue link](https://github.com/BasedHardware/omi/issues/4631)
 **Draft PR:** [#8728 — feat: persistent baseline memories](https://github.com/BasedHardware/omi/pull/8728)
 **Branch:** [feature/persistent-baseline-memories](https://github.com/srujana-keth/omi/tree/feature/persistent-baseline-memories)
-**Status:** Phase IV — PR feedback addressed, pushed for re-review
+**Status:** Phase IV — PR feedback addressed, pushed code for re-review, changes the status of PR from Draft to Ready For Review
 
 ---
 
@@ -118,7 +118,7 @@ Add a boolean `is_baseline` flag to the `Memory` model. Baseline memories are al
 - [x] **Prompt label** — `get_prompt_memories()` includes a "baseline" / "always in context" label when baseline memories exist; omits it when there are none
 - [x] **Locked memories** — `is_locked=True` memories are excluded from all buckets
 - [x] **Baseline precedence** — `is_baseline=True` wins over `manually_added=True` (memory lands in baseline, not user_made)
-- [x] **Rate limit** — baseline endpoint is gated by `memories:modify` rate-limit policy
+- [ ] **Rate limit** — baseline endpoint is gated by `memories:modify` rate-limit policy
 
 All unit tests are hermetic (no Firebase, no network) via `unittest.mock.patch` on DB and system calls.
 
@@ -129,7 +129,7 @@ All unit tests are hermetic (no Firebase, no network) via `unittest.mock.patch` 
 
 ### Manual Testing
 
-Verified backend logic using `pytest backend/tests/unit/test_baseline_memories.py` which mocks all database dependencies.
+Verified backend logic using `cd backend && pytest tests/unit/test_baseline_memories.py` which mocks all database dependencies.
 
 ---
 
@@ -153,7 +153,7 @@ Verified backend logic using `pytest backend/tests/unit/test_baseline_memories.p
   - `app/lib/pages/memories/widgets/memory_item.dart` — `FaIconData icon` (typed, from main)
 - **Addressed PR reviewer feedback (#8728):**
   - Replaced `_validate_memory` with `_validate_mutable_memory` in the baseline endpoint — canonical-path users now get a 404 from the canonical store, not the legacy store
-  - Replaced regex/source-level tests with 9 behavioral tests exercising actual `MemoryDB` instantiation, `dict()` serialization, and `get_prompt_data`/`get_prompt_memories` logic via mocked DB
+  - Replaced regex/source-level tests with 12 behavioral tests exercising actual `MemoryDB` instantiation, `dict()` serialization, and `get_prompt_data`/`get_prompt_memories` logic via mocked DB
 - Pushed all changes to `feature/persistent-baseline-memories`
 
 ### Code Changes
@@ -162,7 +162,7 @@ Verified backend logic using `pytest backend/tests/unit/test_baseline_memories.p
 - `backend/models/memories.py` — `is_baseline: bool = False` field on `MemoryDB`
 - `backend/routers/memories.py` — `PATCH /v3/memories/{memory_id}/baseline` with dual-path validation
 - `backend/utils/llms/memory.py` — 4-bucket `get_prompt_data()` with canonical + legacy path support
-- `backend/tests/unit/test_baseline_memories.py` — 9 behavioral unit tests (hermetic)
+- `backend/tests/unit/test_baseline_memories.py` — 12 behavioral unit tests (hermetic)
 - `app/lib/backend/schema/memory.dart` — `isBaseline` field in Flutter `Memory` model
 - `app/lib/pages/memories/widgets/memory_edit_sheet.dart` — flag toggle + baseline badge
 - `app/lib/pages/memories/widgets/memory_item.dart` — blue flag indicator for baseline memories
@@ -170,6 +170,7 @@ Verified backend logic using `pytest backend/tests/unit/test_baseline_memories.p
 **Key commits:**
 - [`7a5f6ac`](https://github.com/srujana-keth/omi/commit/7a5f6ac21375bb9c0a79a274432ec2c1a2f21da3) — initial implementation (backend + Flutter UI)
 - [`55ba3ed`](https://github.com/srujana-keth/omi/commit/55ba3ed2a) — merge conflicts resolved + PR feedback addressed
+- [`b1040dfb`](https://github.com/srujana-keth/omi/commit/b1040dfbd) — fix injection tests with stub_modules + load_module_fresh
 
 **Approach decisions:**
 - Added `is_baseline` as an additive field defaulting to `False` — fully backward-compatible with existing Firestore documents
@@ -187,7 +188,7 @@ Verified backend logic using `pytest backend/tests/unit/test_baseline_memories.p
 - Implemented `PATCH /v3/memories/{memory_id}/baseline` endpoint with canonical + legacy path routing
 - Updated `get_prompt_data()` to return a 4-tuple `(user_name, baseline, user_made, generated)` and inject baseline memories first with a distinct label; works on both canonical and legacy memory systems
 - Added flag toggle UI in Flutter: flag icon button in the edit sheet, blue flag indicator on the memory list item
-- Replaced source-level regex tests with 9 hermetic behavioral tests
+- Replaced source-level regex tests with 12 hermetic behavioral tests
 
 **PR Reviewer Feedback Received (and addressed):**
 1. ✅ **Merge conflicts** — synced fork with upstream, resolved all 5 conflict files
