@@ -3,7 +3,7 @@
 **Contribution Number:** 6
 **Student:** Srujana Kethamukkala
 **Issue:** [GitHub issue link](https://github.com/BasedHardware/omi/issues/4631)
-**Draft PR:** [#8728 — feat: persistent baseline memories](https://github.com/BasedHardware/omi/pull/8728)
+**PR:** [#8728 — feat: persistent baseline memories](https://github.com/BasedHardware/omi/pull/8728)
 **Branch:** [feature/persistent-baseline-memories](https://github.com/srujana-keth/omi/tree/feature/persistent-baseline-memories)
 **Status:** Phase IV — PR feedback addressed, pushed code for re-review, changes the status of PR from Draft to Ready For Review
 
