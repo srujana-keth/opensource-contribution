@@ -5,7 +5,7 @@
 **Issue:** [GitHub issue link](https://github.com/BasedHardware/omi/issues/4631)
 **PR:** [#8728 — feat: persistent baseline memories](https://github.com/BasedHardware/omi/pull/8728)
 **Branch:** [feature/persistent-baseline-memories](https://github.com/srujana-keth/omi/tree/feature/persistent-baseline-memories)
-**Status:** Phase V — All blocking reviewer feedback resolved across 3 rounds; PR approved by kodjima33 (frontend), pending final backend/architecture merge decision
+**Status:** MERGED — PR #8728 merged to `BasedHardware/omi` main. All blocking reviewer feedback resolved across 4 rounds of review.
 
 ---
 
@@ -213,7 +213,7 @@ Verified backend logic using `cd backend && pytest tests/unit/test_baseline_memo
 - `kodjima33` re-approved on new SHA `883a8cd48a`
 - PR still open pending human product/architecture review for the feature concept
 
-**Status:** Phase V — All blocking reviewer feedback resolved across 3 rounds; PR approved by `kodjima33` (frontend), pending final backend/architecture merge decision
+**Status:** MERGED — PR #8728 merged to `BasedHardware/omi` main
 
 ---
 
